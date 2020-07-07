@@ -16,7 +16,7 @@ pr:
     - '*'  # must quote since "*" is a YAML reserved character; we want a string
 
 variables:
-  dockerId: sfpcervicalbiopsy
+  containerRegistry: competitioncodeexecutionprod
     
 jobs:
 - job: publish_runtime_container
@@ -31,9 +31,9 @@ jobs:
   - script: |
       echo $(Build.SourceVersion)
       cd runtime
-      docker build -t $(dockerId).azurecr.io/$(imageName):$(Build.SourceVersion) .
-      docker login -u $(dockerId) -p $(dockerPassword) $(dockerId).azurecr.io
-      docker push $(dockerId).azurecr.io/$(imageName):$(Build.SourceVersion)
+      docker build -t $(containerRegistry).azurecr.io/$(imageName):$(Build.SourceVersion) .
+      docker login -u $(containerRegistry) -p $(dockerPassword) $(containerRegistry).azurecr.io
+      docker push $(containerRegistry).azurecr.io/$(imageName):$(Build.SourceVersion)
     displayName: 'Build and deploy Docker container'
 - job: test_gpu_installs
   condition: ne(variables['build.sourceBranch'], 'refs/heads/master')
@@ -46,10 +46,10 @@ jobs:
   steps:
   - script: |
       cd runtime
-      docker build --build-arg CPU_GPU=gpu -t $(dockerId)/$(imageName):$(Build.SourceVersion) .
+      docker build --build-arg CPU_GPU=gpu -t $(containerRegistry)/$(imageName):$(Build.SourceVersion) .
       docker run --mount type=bind,source=$(pwd)/run-tests.sh,target=/run-tests.sh,readonly \
                   --mount type=bind,source=$(pwd)/tests,target=/tests,readonly \
-                  $(dockerId)/$(imageName):$(Build.SourceVersion) \
+                  $(containerRegistry)/$(imageName):$(Build.SourceVersion) \
                   /bin/bash -c "bash /run-tests.sh gpu"
     displayName: 'Test installs for GPU environment'
 - job: test_cpu_installs
@@ -63,9 +63,9 @@ jobs:
   steps:
   - script: |
       cd runtime
-      docker build --build-arg CPU_GPU=cpu -t $(dockerId)/$(imageName):$(Build.SourceVersion) .
+      docker build --build-arg CPU_GPU=cpu -t $(containerRegistry)/$(imageName):$(Build.SourceVersion) .
       docker run --mount type=bind,source=$(pwd)/run-tests.sh,target=/run-tests.sh,readonly \
                   --mount type=bind,source=$(pwd)/tests,target=/tests,readonly \
-                  $(dockerId)/$(imageName):$(Build.SourceVersion) \
+                  $(containerRegistry)/$(imageName):$(Build.SourceVersion) \
                   /bin/bash -c "bash /run-tests.sh cpu"
     displayName: 'Test installs for CPU environment'
