@@ -17,14 +17,13 @@ pr:
 
 variables:
   containerRegistry: competitioncodeexecutionprod
+  imageName: sfp-cervical-biopsy
     
 jobs:
 - job: publish_runtime_container
   condition: eq(variables['build.sourceBranch'], 'refs/heads/master')
   pool:
     vmImage: 'ubuntu-latest'
-  variables:
-    imageName: inference
   timeoutInMinutes: 360
   cancelTimeoutInMinutes: 90
   steps:
@@ -39,8 +38,6 @@ jobs:
   condition: ne(variables['build.sourceBranch'], 'refs/heads/master')
   pool:
     vmImage: 'ubuntu-latest'
-  variables:
-    imageName: inference
   timeoutInMinutes: 360
   cancelTimeoutInMinutes: 90
   steps:
@@ -56,8 +53,6 @@ jobs:
   condition: ne(variables['build.sourceBranch'], 'refs/heads/master')
   pool:
     vmImage: 'ubuntu-latest'
-  variables:
-    imageName: inference
   timeoutInMinutes: 360
   cancelTimeoutInMinutes: 90
   steps:
