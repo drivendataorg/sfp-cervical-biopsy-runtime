@@ -4,9 +4,14 @@ ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ARG CPU_GPU=gpu
 
 RUN apt-get update --fix-missing && \
-    apt-get install --no-install-recommends \
-    wget software-properties-common pkg-config build-essential unzip git \
-    libglu1-mesa -y && \
+    apt-get install --no-install-recommends -y \
+	build-essential \
+	git \
+	libglu1-mesa && \
+	pkg-config \
+	software-properties-common \
+	unzip \
+	wget \
     apt-get autoremove -y && apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /usr/local/src/*
