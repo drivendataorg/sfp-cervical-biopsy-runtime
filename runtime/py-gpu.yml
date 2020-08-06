@@ -1,25 +1,27 @@
 channels:
+  - bioconda
   - pytorch
   - fastai
   - conda-forge
   - defaults
 dependencies:
-  - fastai=1.0.61=1
-  - lightgbm=2.3.1=py36he1b5a44_0
-  - mahotas=1.4.10=py36h830a2c2_0
-  - opencv=4.2.0=py36_7
-  - pandas=1.0.5=py36h830a2c2_0
-  - pillow=7.2.0=py36h8328e55_0
-  - py-opencv=4.2.0=py36h95af2a2_7
-  - py-xgboost=1.1.1=py36h9f0ad1d_0
-  - python=3.6.10=h8356626_1011_cpython
-  - python-dotenv=0.14.0=pyh9f0ad1d_0
-  - pytorch=1.5.1=py3.6_cuda10.1.243_cudnn7.6.3_0
-  - scikit-image=0.17.2=py36h830a2c2_1
-  - scikit-learn=0.23.1=py36h0e1014b_0
-  - scipy=1.5.0=py36h2d22cac_0
-  - tensorflow-gpu=2.2.0=h0d30ee6_0
-  - torchvision=0.6.1=py36_cu101
-  - xgboost=1.1.1=py36h831f99a_0
+  - fastai
+  - lightgbm
+  - mahotas
+  - opencv
+  - openslide-python
+  - pandas
+  - pillow
+  - py-opencv
+  - py-xgboost
+  - python
+  - python-dotenv
+  - pytorch
+  - scikit-image
+  - scikit-learn
+  - scipy
+  - tensorflow-gpu
+  - torchvision
+  - xgboost
 name: py-gpu
 prefix: /opt/conda/envs/py-gpu
