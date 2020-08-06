@@ -7,11 +7,12 @@ RUN apt-get update --fix-missing && \
     apt-get install --no-install-recommends -y \
 	build-essential \
 	git \
-	libglu1-mesa && \
+	libglu1-mesa \
+	libopenslide-dev \
 	pkg-config \
 	software-properties-common \
 	unzip \
-	wget \
+	wget && \
     apt-get autoremove -y && apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /usr/local/src/*
@@ -29,7 +30,7 @@ RUN chmod +x /inference/entrypoint.sh
 USER 1000
 
 # install miniconda as system python
-RUN wget --quiet https://repo.continuum.io/miniconda/Miniconda3-4.5.4-Linux-x86_64.sh -O /opt/miniconda.sh && \
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-py37_4.8.3-Linux-x86_64.sh -O /opt/miniconda.sh && \
     /bin/bash /opt/miniconda.sh -b -p /opt/conda
 
 ENV PATH /opt/conda/bin:$PATH
