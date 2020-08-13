@@ -38,11 +38,13 @@ ENV PATH /opt/conda/bin:$PATH
 COPY *.yml /envs/
 COPY ./package-installs*.R /envs/
 
-# create environments
+# create Python environment
 RUN conda update conda && \
     conda env create -f /envs/py-${CPU_GPU}.yml && \
-    conda clean -a -y && \
-    conda env create -f /envs/r-${CPU_GPU}.yml && \
+    conda clean -a -y
+
+# create R environment
+RUN conda env create -f /envs/r-${CPU_GPU}.yml && \
     conda clean -a -y && \
     conda clean -f -y && \
     /opt/conda/envs/r-${CPU_GPU}/bin/R -f /envs/package-installs-${CPU_GPU}.R
