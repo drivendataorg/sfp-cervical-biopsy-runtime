@@ -13,20 +13,16 @@ import torchvision
 logging.basicConfig(level=logging.INFO)
 
 ROOT_DIRECTORY = Path(__file__).parent.expanduser().resolve()
-# ROOT_DIRECTORY = Path(".").expanduser().resolve() / "benchmark" / "inference-py"
-ASSET_DIRECTORY = ROOT_DIRECTORY / "assets"
-MODEL_PATH = ASSET_DIRECTORY / "my-awesome-model.pt"
+MODEL_PATH = ROOT_DIRECTORY / "assets" / "my-awesome-model.pt"
 
-# The images will live in a folder called 'data' in the container
+# The images will live in a folder called '/inference/data/test_images' in the container
 DATA_DIRECTORY = Path("/inference/data")
-# DATA_DIRECTORY = (
-#     Path("~/projects/sfp-cervical-biopsy-runtime/inference-data").expanduser().resolve()
-# )
+IMAGE_DIRECTORY = DATA_DIRECTORY / "test_images"
 TILE_DIRECTORY = ROOT_DIRECTORY / "tiles"
 
 
 def generate_image_tiles(
-    input_directory: Path = DATA_DIRECTORY,
+    input_directory: Path = IMAGE_DIRECTORY,
     output_directory: Path = TILE_DIRECTORY,
     tile_width: int = 512,
     tile_height: int = 512,
@@ -54,25 +50,14 @@ def perform_inference():
     """This is the main function executed at runtime in the cloud environment.
     """
     logging.info("Loading model.")
-    model = torch.load(MODEL_PATH)
+    model = torch.load(str(MODEL_PATH))
 
     logging.info("Loading and processing metadata.")
 
     # Our preprocessing selects the first image for each sequence
-    test_metadata = pd.read_csv(
-        DATA_DIRECTORY / "test_metadata.csv", index_col="seq_id"
-    )
-    test_metadata = (
-        test_metadata.sort_values("file_name").groupby("seq_id").first().reset_index()
-    )
-
-    # Prepend the path to our filename since our data lives in a separate folder
-    test_metadata["full_path"] = test_metadata.file_name.map(
-        lambda x: str(DATA_DIRECTORY / x)
-    )
+    test_metadata = pd.read_csv(DATA_DIRECTORY / "test_metadata.csv", index_col="slide")
 
     logging.info("Starting inference.")
-
     # Preallocate prediction output
     submission_format = pd.read_csv(
         DATA_DIRECTORY / "submission_format.csv", index_col="slide"
