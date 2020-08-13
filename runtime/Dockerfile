@@ -9,6 +9,7 @@ RUN apt-get update --fix-missing && \
 	git \
 	libglu1-mesa \
 	libopenslide-dev \
+	libvips-dev \
 	pkg-config \
 	software-properties-common \
 	unzip \
