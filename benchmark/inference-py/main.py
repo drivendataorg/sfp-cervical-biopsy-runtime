@@ -87,6 +87,8 @@ def perform_inference(batch_size: int = 16):
     """
     logging.info("Loading model.")
     model = torch.load(str(MODEL_PATH))
+    if torch.cuda.is_available():
+        model = model.to("cuda")
 
     logging.info("Loading and processing metadata.")
 
@@ -115,7 +117,9 @@ def perform_inference(batch_size: int = 16):
     predictions = []
     for batch_index, batch in enumerate(data_generator):
         logging.info("Batch %d", batch_index)
-        preds = model.forward(batch)
+        if torch.cuda.is_available():
+            batch = batch.to("cuda")
+        preds = model.forward(batch.to("cuda"))
         for label in preds.argmax(1):
             predictions.append({"label": int(label)})
 
@@ -143,4 +147,4 @@ def perform_inference(batch_size: int = 16):
 
 
 if __name__ == "__main__":
-    perform_inference()
+    perform_inference(batch_size=512)
