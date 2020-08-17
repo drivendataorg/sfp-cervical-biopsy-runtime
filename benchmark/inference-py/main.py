@@ -61,25 +61,28 @@ class WholeSlideImageDataset(torch.utils.data.Dataset):
 
     def __getitem__(self, index):
         index = self.indices.iloc[index]
-        logging.info("Reading %s %d %d", index.filename, index.column, index.row)
-        image = pyvips.Image.new_from_file(
-            str(self.image_directory / index.filename)
-        ).crop(
-            index.column * self.tile_width,
-            index.row * self.tile_height,
-            self.tile_width,
-            self.tile_height,
-        )
-        image = PIL.Image.frombuffer(
-            "RGB", (self.tile_width, self.tile_height), image.write_to_memory()
+        image = pyvips.Image.new_from_file(str(self.image_directory / index.filename))
+        try:
+            region = image.crop(
+                index.column * self.tile_width,
+                index.row * self.tile_height,
+                self.tile_width,
+                self.tile_height,
+            )
+        # until we fix the width and height in the metadata
+        except pyvips.error.Error:
+            region = image.crop(0, 0, self.tile_width, self.tile_height)
+
+        region = PIL.Image.frombuffer(
+            "RGB", (self.tile_width, self.tile_height), region.write_to_memory()
         )
         if self.transform is not None:
-            image = self.transform(image)
+            region = self.transform(region)
 
-        return image
+        return region
 
 
-def perform_inference():
+def perform_inference(batch_size: int = 16):
     """This is the main function executed at runtime in the cloud environment.
     """
     logging.info("Loading model.")
@@ -98,13 +101,20 @@ def perform_inference():
         DATA_DIRECTORY / "submission_format.csv", index_col="filename"
     )
 
-    data_generator = torch.utils.data.DataLoader(dataset, batch_size=4, shuffle=False)
+    data_generator = torch.utils.data.DataLoader(
+        dataset, batch_size=batch_size, shuffle=False
+    )
 
     # Perform (and time) inference
     inference_start = datetime.now()
-    logging.info("Starting inference %s", inference_start)
+    logging.info(
+        "Starting inference %s (%d batches)",
+        inference_start,
+        len(dataset) // batch_size,
+    )
     predictions = []
-    for batch in data_generator:
+    for batch_index, batch in enumerate(data_generator):
+        logging.info("Batch %d", batch_index)
         preds = model.forward(batch)
         for label in preds.argmax(1):
             predictions.append({"label": int(label)})
