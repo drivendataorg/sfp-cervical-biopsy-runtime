@@ -36,7 +36,8 @@ class WholeSlideImageDataset(torch.utils.data.Dataset):
         for entry in metadata.itertuples():
 
             for row, column in itertools.product(
-                range(entry.width // tile_width), range(entry.height // tile_height)
+                range(entry.width // (tile_width - 1)),
+                range(entry.height // (tile_height - 1)),
             ):
                 indices.append(
                     {
