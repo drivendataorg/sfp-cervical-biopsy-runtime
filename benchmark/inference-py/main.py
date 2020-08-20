@@ -119,7 +119,8 @@ def perform_inference(batch_size: int = 16):
         logging.info("Batch %d", batch_index)
         if torch.cuda.is_available():
             batch = batch.to("cuda")
-        preds = model.forward(batch.to("cuda"))
+        with torch.no_grad():
+            preds = model.forward(batch.to("cuda"))
         for label in preds.argmax(1):
             predictions.append({"label": int(label)})
 
