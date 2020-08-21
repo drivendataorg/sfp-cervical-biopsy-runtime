@@ -20,7 +20,7 @@ DATA_DIRECTORY = Path("/inference/data")
 IMAGE_DIRECTORY = DATA_DIRECTORY / "test_images"
 
 
-def vips2numpy(vi):
+def vips2numpy(fetch, image_format, width, height, bands):
     format_to_dtype = {
         "uchar": np.uint8,
         "char": np.int8,
@@ -34,9 +34,7 @@ def vips2numpy(vi):
         "dpcomplex": np.complex128,
     }
     return np.ndarray(
-        buffer=vi.write_to_memory(),
-        dtype=format_to_dtype[vi.format],
-        shape=[vi.height, vi.width, vi.bands],
+        buffer=fetch, dtype=format_to_dtype[image_format], shape=[height, width, bands],
     )
 
 
@@ -52,7 +50,18 @@ class WholeSlideImageDataset(torch.utils.data.Dataset):
         metadata = pd.read_csv(metadata_path, index_col="filename")
 
         indices = []
-        for entry in metadata.itertuples():
+        regions = []
+        for image_index, entry in enumerate(metadata.itertuples()):
+            image = pyvips.Image.new_from_file(
+                str(IMAGE_DIRECTORY / Path(entry.Index).with_suffix(".tif"))
+            )
+            regions.append(
+                {
+                    "region": pyvips.Region.new(image),
+                    "format": image.format,
+                    "bands": image.bands,
+                }
+            )
             for row, column in itertools.product(
                 range(entry.width // (tile_width - 1)),
                 range(entry.height // (tile_height - 1)),
@@ -60,6 +69,7 @@ class WholeSlideImageDataset(torch.utils.data.Dataset):
                 indices.append(
                     {
                         "filename": Path(entry.Index).with_suffix(".tif"),
+                        "image_index": image_index,
                         "row": row,
                         "column": column,
                     }
@@ -72,6 +82,7 @@ class WholeSlideImageDataset(torch.utils.data.Dataset):
             image_directory,
         )
         self.indices = pd.DataFrame(indices)
+        self.regions = regions
         self.image_directory = image_directory
         self.tile_width = tile_width
         self.tile_height = tile_height
@@ -84,17 +95,9 @@ class WholeSlideImageDataset(torch.utils.data.Dataset):
 
     def __getitem__(self, index):
         index = self.indices.iloc[index]
-        image_path = self.image_directory / index.filename
-        if (image_path is not None) and (image_path == self._loaded_image_path):
-            image = self._loaded_image
-        else:
-            image = pyvips.Image.new_from_file(
-                str(self.image_directory / index.filename)
-            )
-            self._loaded_image = image
-            self._loaded_image_path = image_path
+        region = self.regions[index.image_index]["region"]
         try:
-            region = image.crop(
+            tile = region.fetch(
                 index.column * self.tile_width,
                 index.row * self.tile_height,
                 self.tile_width,
@@ -102,14 +105,20 @@ class WholeSlideImageDataset(torch.utils.data.Dataset):
             )
         # until we fix the width and height in the metadata
         except pyvips.error.Error:
-            region = image.crop(0, 0, self.tile_width, self.tile_height)
+            tile = region.fetch(0, 0, self.tile_width, self.tile_height)
 
-        region = vips2numpy(region)
+        tile = vips2numpy(
+            tile,
+            self.regions[index.image_index]["format"],
+            self.tile_width,
+            self.tile_height,
+            self.regions[index.image_index]["bands"],
+        )
 
         if self.transform is not None:
-            region = self.transform(region)
+            tile = self.transform(tile)
 
-        return region, image_path.name
+        return tile, index.filename.name
 
 
 def perform_inference(batch_size: int = 16):

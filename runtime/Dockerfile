@@ -8,8 +8,6 @@ RUN apt-get update --fix-missing && \
 	build-essential \
 	git \
 	libglu1-mesa \
-	libopenslide-dev \
-	libvips-dev \
 	pkg-config \
 	software-properties-common \
 	unzip \
@@ -17,6 +15,25 @@ RUN apt-get update --fix-missing && \
     apt-get autoremove -y && apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /usr/local/src/*
+
+RUN apt-get update --fix-missing && \
+	apt-get install -y \
+	build-essential \
+	pkg-config \
+	glib2.0-dev \
+	libexpat1-dev \
+	libtiff5-dev \
+	libjpeg-turbo8-dev \
+	libgsf-1-dev
+
+RUN wget https://github.com/libvips/libvips/releases/download/v8.9.2/vips-8.9.2.tar.gz && \
+	tar xvf vips-8.9.2.tar.gz && \
+	cd vips-8.9.2 && \
+	./configure && \
+	make && \
+	make install && \
+	ldconfig
+
 
 # Limited User
 RUN groupadd -g 999 appuser && \
@@ -43,11 +60,11 @@ RUN conda update conda && \
     conda env create -f /envs/py-${CPU_GPU}.yml && \
     conda clean -a -y
 
-# create R environment
-RUN conda env create -f /envs/r-${CPU_GPU}.yml && \
-    conda clean -a -y && \
-    conda clean -f -y && \
-    /opt/conda/envs/r-${CPU_GPU}/bin/R -f /envs/package-installs-${CPU_GPU}.R
+# # create R environment
+# RUN conda env create -f /envs/r-${CPU_GPU}.yml && \
+#     conda clean -a -y && \
+#     conda clean -f -y && \
+#     /opt/conda/envs/r-${CPU_GPU}/bin/R -f /envs/package-installs-${CPU_GPU}.R
 
 
 # Execute the entrypoint.sh script inside the container when we do docker run
