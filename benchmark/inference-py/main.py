@@ -3,6 +3,7 @@ import itertools
 import logging
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import PIL
 import pyvips
@@ -17,8 +18,7 @@ MODEL_PATH = ROOT_DIRECTORY / "assets" / "my-awesome-model.pt"
 
 # The images will live in a folder called '/inference/data/test_images' in the container
 DATA_DIRECTORY = Path("/inference/data")
-IMAGE_DIRECTORY = DATA_DIRECTORY / "test_images" / "annotated_sample_tifs"
-TILE_DIRECTORY = ROOT_DIRECTORY / "tiles"
+IMAGE_DIRECTORY = DATA_DIRECTORY / "test_images"
 
 
 class WholeSlideImageDataset(torch.utils.data.Dataset):
@@ -34,7 +34,6 @@ class WholeSlideImageDataset(torch.utils.data.Dataset):
 
         indices = []
         for entry in metadata.itertuples():
-
             for row, column in itertools.product(
                 range(entry.width // (tile_width - 1)),
                 range(entry.height // (tile_height - 1)),
@@ -48,20 +47,33 @@ class WholeSlideImageDataset(torch.utils.data.Dataset):
                 )
 
         logging.info(
-            "Dataset of %s images from %s", len(indices), image_directory,
+            "Dataset of %d images (%d tiles) images from %s",
+            len(metadata),
+            len(indices),
+            image_directory,
         )
         self.indices = pd.DataFrame(indices)
         self.image_directory = image_directory
         self.tile_width = tile_width
         self.tile_height = tile_height
         self.transform = transform
+        self._loaded_image = None
+        self._loaded_image_path = None
 
     def __len__(self):
         return len(self.indices)
 
     def __getitem__(self, index):
         index = self.indices.iloc[index]
-        image = pyvips.Image.new_from_file(str(self.image_directory / index.filename))
+        image_path = self.image_directory / index.filename
+        if (image_path is not None) and (image_path == self._loaded_image_path):
+            image = self._loaded_image
+        else:
+            image = pyvips.Image.new_from_file(
+                str(self.image_directory / index.filename)
+            )
+            self._loaded_image = image
+            self._loaded_image_path = image_path
         try:
             region = image.crop(
                 index.column * self.tile_width,
@@ -79,7 +91,7 @@ class WholeSlideImageDataset(torch.utils.data.Dataset):
         if self.transform is not None:
             region = self.transform(region)
 
-        return region
+        return region, image_path.name
 
 
 def perform_inference(batch_size: int = 16):
@@ -115,14 +127,14 @@ def perform_inference(batch_size: int = 16):
         len(dataset) // batch_size,
     )
     predictions = []
-    for batch_index, batch in enumerate(data_generator):
+    for batch_index, (batch, slide) in enumerate(data_generator):
         logging.info("Batch %d", batch_index)
         if torch.cuda.is_available():
             batch = batch.to("cuda")
         with torch.no_grad():
             preds = model.forward(batch.to("cuda"))
         for label in preds.argmax(1):
-            predictions.append({"label": int(label)})
+            predictions.append({"label": int(label), "slide": slide})
 
     inference_end = datetime.now()
     logging.info(
@@ -131,19 +143,18 @@ def perform_inference(batch_size: int = 16):
         inference_end - inference_start,
     )
 
-    # # Check our predictions are in the same order as the submission format
-    # predictions = pd.DataFrame(predictions)
-    # submission = predictions.groupby("slide").label.max()
-    # logging.info("Creating submission.")
-    # submission = submission.loc[submission_format.index]
-    # assert (submission.index == submission_format.index).all()
+    # Check our predictions are in the same order as the submission format
+    predictions = pd.DataFrame(predictions)
+    submission = predictions.groupby("slide").label.max()
+    logging.info("Creating submission.")
+    submission = submission.loc[submission_format.index]
+    assert (submission.index == submission_format.index).all()
 
     # # We want to ensure all of our data are floats, not integers
-    # submission = submission.astype(np.float)
+    submission = submission.astype(np.float)
 
     # Save out submission to root of directory
-    # submission.to_csv("submission.csv", index=True)
-    submission_format.to_csv("submission.csv", index=True)
+    submission.to_csv("submission.csv", index=True)
     logging.info("Submission saved.")
 
 
