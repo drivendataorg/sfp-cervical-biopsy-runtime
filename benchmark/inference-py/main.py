@@ -5,7 +5,6 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import PIL
 import pyvips
 import torch
 import torchvision
@@ -19,6 +18,26 @@ MODEL_PATH = ROOT_DIRECTORY / "assets" / "my-awesome-model.pt"
 # The images will live in a folder called '/inference/data/test_images' in the container
 DATA_DIRECTORY = Path("/inference/data")
 IMAGE_DIRECTORY = DATA_DIRECTORY / "test_images"
+
+
+def vips2numpy(vi):
+    format_to_dtype = {
+        "uchar": np.uint8,
+        "char": np.int8,
+        "ushort": np.uint16,
+        "short": np.int16,
+        "uint": np.uint32,
+        "int": np.int32,
+        "float": np.float32,
+        "double": np.float64,
+        "complex": np.complex64,
+        "dpcomplex": np.complex128,
+    }
+    return np.ndarray(
+        buffer=vi.write_to_memory(),
+        dtype=format_to_dtype[vi.format],
+        shape=[vi.height, vi.width, vi.bands],
+    )
 
 
 class WholeSlideImageDataset(torch.utils.data.Dataset):
@@ -85,9 +104,8 @@ class WholeSlideImageDataset(torch.utils.data.Dataset):
         except pyvips.error.Error:
             region = image.crop(0, 0, self.tile_width, self.tile_height)
 
-        region = PIL.Image.frombuffer(
-            "RGB", (self.tile_width, self.tile_height), region.write_to_memory()
-        )
+        region = vips2numpy(region)
+
         if self.transform is not None:
             region = self.transform(region)
 
@@ -128,11 +146,11 @@ def perform_inference(batch_size: int = 16):
     )
     predictions = []
     for batch_index, (batch, slide) in enumerate(data_generator):
-        logging.info("Batch %d", batch_index)
+        logging.info("Batch %d %s", batch_index, datetime.now())
         if torch.cuda.is_available():
             batch = batch.to("cuda")
         with torch.no_grad():
-            preds = model.forward(batch.to("cuda"))
+            preds = model.forward(batch)
         for label in preds.argmax(1):
             predictions.append({"label": int(label), "slide": slide})
 
