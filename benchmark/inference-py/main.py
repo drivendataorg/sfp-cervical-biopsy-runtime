@@ -1,5 +1,6 @@
 from datetime import datetime
 import logging
+from multiprocessing import Manager
 from pathlib import Path
 from typing import Tuple
 
@@ -123,19 +124,12 @@ class WholeSlideImageDataset(torch.utils.data.Dataset):
         transform=None,
     ):
         indices = []
-        regions = []
+        image_paths = []
         assert (
             image_directory.exists()
         ), "Image directory {image_directory} does not exist"
         for image_index, image_path in enumerate(image_directory.glob("*.tif")):
-            image = pyvips.Image.new_from_file(str(image_path))
-            regions.append(
-                {
-                    "region": pyvips.Region.new(image),
-                    "format": image.format,
-                    "bands": image.bands,
-                }
-            )
+            image_paths.append(str(image_path))
             for row, column in zip(*get_tissue_tile_indices(image_path)):
                 indices.append(
                     {
@@ -152,39 +146,34 @@ class WholeSlideImageDataset(torch.utils.data.Dataset):
             len(indices),
             image_directory,
         )
-        self.indices = pd.DataFrame(indices)
-        self.regions = regions
-        self.image_directory = image_directory
+        manager = Manager()
+        self.indices = manager.list(indices)
+        self.image_paths = manager.list(image_paths)
         self.tile_width = tile_width
         self.tile_height = tile_height
         self.transform = transform
-        self._loaded_image = None
-        self._loaded_image_path = None
 
     def __len__(self):
         return len(self.indices)
 
     def __getitem__(self, index):
-        index = self.indices.iloc[index]
-        region = self.regions[index.image_index]["region"]
-        tile = region.fetch(
-            index.column * self.tile_width,
-            index.row * self.tile_height,
+        index = self.indices[index]
+        image = pyvips.Image.new_from_file(self.image_paths[index["image_index"]])
+
+        tile = pyvips.Region.new(image).fetch(
+            index["column"] * self.tile_width,
+            index["row"] * self.tile_height,
             self.tile_width,
             self.tile_height,
         )
         tile = vips2numpy(
-            tile,
-            self.regions[index.image_index]["format"],
-            self.tile_width,
-            self.tile_height,
-            self.regions[index.image_index]["bands"],
+            tile, image.format, self.tile_width, self.tile_height, image.bands
         )
 
         if self.transform is not None:
             tile = self.transform(tile)
 
-        return tile, index.filename
+        return tile, index["filename"]
 
 
 def perform_inference(batch_size: int = 16):
@@ -207,7 +196,7 @@ def perform_inference(batch_size: int = 16):
     )
 
     data_generator = torch.utils.data.DataLoader(
-        dataset, batch_size=batch_size, shuffle=False
+        dataset, batch_size=batch_size, shuffle=False, num_workers=4,
     )
 
     # Perform (and time) inference
