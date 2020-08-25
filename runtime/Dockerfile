@@ -60,11 +60,11 @@ RUN conda update conda && \
     conda env create -f /envs/py-${CPU_GPU}.yml && \
     conda clean -a -y
 
-# # create R environment
-# RUN conda env create -f /envs/r-${CPU_GPU}.yml && \
-#     conda clean -a -y && \
-#     conda clean -f -y && \
-#     /opt/conda/envs/r-${CPU_GPU}/bin/R -f /envs/package-installs-${CPU_GPU}.R
+# create R environment
+RUN conda env create -f /envs/r-${CPU_GPU}.yml && \
+    conda clean -a -y && \
+    conda clean -f -y && \
+    /opt/conda/envs/r-${CPU_GPU}/bin/R -f /envs/package-installs-${CPU_GPU}.R
 
 
 # Execute the entrypoint.sh script inside the container when we do docker run
