@@ -1,6 +1,6 @@
-# Hakuna Ma-data: Identify Wildlife on the Serengeti with AI for Earth
+# Société Française de Pathologie: Cervical biopsy challenge
 
-This repository contains runtime configuration for the [Hakuna Ma-data: Identify Wildlife on the Serengeti with AI for Earth](https://www.drivendata.org/competitions/59/camera-trap-serengeti/) competition, as well as example benchmark solutions.
+This repository contains runtime configuration for the [SFP Cervical Biopsy Challenge](https://www.drivendata.org/) competition, as well as example benchmark solutions.
 
 ## Adding dependencies to runtime configuration
 

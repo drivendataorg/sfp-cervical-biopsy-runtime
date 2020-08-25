@@ -10,7 +10,7 @@ fi
 if [ $(which nvidia-smi) ]
 then
     docker build --build-arg CPU_GPU=gpu -t sfp-cervical-biopsy/inference runtime
-    docker run -it \
+    docker run \
 	   --gpus all \
            --network none \
            --mount type=bind,source=$(pwd)/inference-data,target=/inference/data,readonly \
