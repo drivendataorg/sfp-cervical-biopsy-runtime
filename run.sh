@@ -17,6 +17,7 @@ then
            --network none \
            --mount type=bind,source=$(pwd)/inference-data,target=/inference/data,readonly \
            --mount type=bind,source=$(pwd)/submission,target=/inference/submission \
+	   --shm-size 8g \
            sfp-cervical-biopsy/inference
 else
     docker rm -f sfp-submission-cpu
@@ -26,5 +27,6 @@ else
 	   --network none \
            --mount type=bind,source=$(pwd)/inference-data,target=/inference/data,readonly \
            --mount type=bind,source=$(pwd)/submission,target=/inference/submission \
+	   --shm-size 8g \
            sfp-cervical-biopsy/inference
 fi

@@ -207,13 +207,13 @@ def perform_inference(batch_size: int = 16):
         len(dataset) // batch_size,
     )
     predictions = []
-    for batch_index, (batch, slide) in enumerate(data_generator):
+    for batch_index, (batch, slides) in enumerate(data_generator):
         logging.info("Batch %d %s", batch_index, datetime.now())
         if torch.cuda.is_available():
             batch = batch.to("cuda")
         with torch.no_grad():
             preds = model.forward(batch)
-        for label in preds.argmax(1):
+        for label, slide in zip(preds.argmax(1), slides):
             predictions.append({"label": int(label), "slide": slide})
 
     inference_end = datetime.now()
@@ -230,7 +230,7 @@ def perform_inference(batch_size: int = 16):
     submission = submission.loc[submission_format.index]
     assert (submission.index == submission_format.index).all()
 
-    # # We want to ensure all of our data are floats, not integers
+    # We want to ensure all of our data are floats, not integers
     submission = submission.astype(np.float)
 
     # Save out submission to root of directory
