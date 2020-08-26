@@ -20,7 +20,7 @@ ROOT_DIRECTORY = Path(__file__).parent.expanduser().resolve()
 MODEL_PATH = ROOT_DIRECTORY / "assets" / "my-awesome-model.pt"
 
 # The images will live in a folder called '/inference/data/test_images' in the container
-DATA_DIRECTORY = Path("/inference/data")
+DATA_DIRECTORY = ROOT_DIRECTORY / "data"
 IMAGE_DIRECTORY = DATA_DIRECTORY / "test_images"
 
 
@@ -237,8 +237,8 @@ def perform_inference(batch_size: int = 16, num_dataloader_workers: int = 4):
     submission = submission.loc[submission_format.index]
     assert (submission.index == submission_format.index).all()
 
-    # We want to ensure all of our data are floats, not integers
-    submission = submission.astype(np.float)
+    # We want to ensure all of our data are integers
+    submission = submission.astype(np.int)
 
     # Save out submission to root of directory
     submission.to_csv("submission.csv", index=True)
