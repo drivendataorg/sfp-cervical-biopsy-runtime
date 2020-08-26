@@ -179,7 +179,7 @@ class WholeSlideImageDataset(torch.utils.data.Dataset):
         return tile, index["filename"]
 
 
-def perform_inference(batch_size: int = 16):
+def perform_inference(batch_size: int = 16, num_dataloader_workers: int = 4):
     """This is the main function executed at runtime in the cloud environment.
     """
     logging.info("Loading model.")
@@ -194,7 +194,10 @@ def perform_inference(batch_size: int = 16):
 
     logging.info("Starting inference.")
     data_generator = torch.utils.data.DataLoader(
-        dataset, batch_size=batch_size, shuffle=False, num_workers=4,
+        dataset,
+        batch_size=batch_size,
+        shuffle=False,
+        num_workers=num_dataloader_workers,
     )
 
     # Perform (and time) inference
@@ -243,4 +246,4 @@ def perform_inference(batch_size: int = 16):
 
 
 if __name__ == "__main__":
-    perform_inference(batch_size=512)
+    perform_inference(batch_size=512, num_dataloader_workers=4)
