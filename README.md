@@ -1,8 +1,8 @@
-# Société Française de Pathologie: Cervical biopsy challenge
+# Société Française de Pathologie: Cervical Biopsy Challenge
 
 This repository contains runtime configuration for the [SFP Cervical Biopsy Challenge](https://www.drivendata.org/) competition, as well as example benchmark solutions.
 
-## Adding dependencies to runtime configuration
+## Adding dependencies to the runtime
 
 We accept contributions to add additional dependencies to the runtime environment. To do so, you'll have to follow these steps:
 
@@ -16,11 +16,7 @@ If you're new to the GitHub contribution workflow, check out [this guide by GitH
 
 ### Python
 
-We use conda to manage Python dependencies.
-
-Add your new dependencies to both `runtime/py-cpu.yml` and `runtime/py-gpu.yml`.
-
-Please also add your dependencies to `runtime/tests/test-installs.py`, below the line `## ADD ADDITIONAL REQUIREMENTS BELOW HERE ##`.
+We use [conda](https://docs.conda.io/en/latest/) to manage Python dependencies. Add your new dependencies to both `runtime/py-cpu.yml` and `runtime/py-gpu.yml`. Please also add your dependencies to `runtime/tests/test-installs.py`, below the line `## ADD ADDITIONAL REQUIREMENTS BELOW HERE ##`.
 
 ### R
 
@@ -37,15 +33,13 @@ Please test your new dependency locally by recreating the relevant conda environ
 If you would like to locally run our CI test (this requires [Docker](https://www.docker.com/products/docker-desktop)), you can use:
 
 ```bash
-cd runtime
-docker build --build-arg CPU_GPU={{PROCESSOR}} -t ai-for-earth-serengeti/inference .
-docker run --mount type=bind,source=$(pwd)/run-tests.sh,target=/run-tests.sh,readonly \
-                  --mount type=bind,source=$(pwd)/tests,target=/tests,readonly \
-                  ai-for-earth-serengeti/inference \
-                  /bin/bash -c "bash /run-tests.sh {{PROCESSOR}}"
+CPU_GPU=cpu  # or 'gpu' to use GPU
+docker build --build-arg CPU_GPU=$CPU_GPU -t sfp-cervical-biopsy/inference runtime
+docker run --mount type=bind,source=$(pwd)/runtime/run-tests.sh,target=/run-tests.sh,readonly \
+                  --mount type=bind,source=$(pwd)/runtime/tests,target=/tests,readonly \
+                  sfp-cervical-biopsy/inference \
+                  /bin/bash -c "bash /run-tests.sh $CPU_GPU"
 ```
-
-replacing `{{PROCESSOR}}` with `cpu` or `gpu` as appropriate for your setup.
 
 ### Opening a pull request
 
@@ -55,20 +49,23 @@ Once you open the pull request, Azure Pipelines will automatically try building 
 
 You may be asked to submit revisions to your pull request if the tests fail, or if a DrivenData team member asks for revisions. Pull requests won't be merged until all tests pass and the team has reviewed and approved the changes.
 
-## Testing submission with benchmark model
 
-Testing the submission locally requires [Docker](https://www.docker.com/products/docker-desktop) and a set of images to predict on in the `inference-data` directory.
+## Testing your submission locally
 
-First, to prepare necessary files for submission, run:
+It is a good idea to test your submission locally using [Docker](https://docs.docker.com/get-docker/) before submitting to the platform. For a Python submission, place your code and model assets into `benchmark/inference-py` and test images in `inference-data`:
 
-```bash
-bash prep.sh
+```
+├── benchmark/inference-py
+│    ├── assets
+│    │   ├── model.json
+│    │   └── weights.h5
+│    └── main.py
+└── inference-data
+    ├── submission_format.csv
+    ├── test_images
+    │   ├── slide1.tif
+    │   └── ...
+    └── test_metadata.csv
 ```
 
-This prepares the Python benchmark solution by default. You can also directly specify whether to prepare the Python or R benchmark solutions with `bash prep.sh py` or `bash prep.sh r`, respectively.
-
-Next, build and run the Docker container with
-
-```bash
-bash run.sh
-```
+Run `bash prep.sh`, which will prepare a `submission/submission.zip` file. Then run `bash run.sh` to build the Docker container and run the submission locally. If the submission completes successfully, you can be upload `submission.zip` as your submission to the platform and be fairly confident that it will run without error.
