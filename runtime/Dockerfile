@@ -10,7 +10,7 @@ RUN apt-get update --fix-missing && \
         glib2.0-dev \
         libexpat1-dev \
         libglu1-mesa \
-        libgsf-1-dev
+        libgsf-1-dev \
         libjpeg-turbo8-dev \
         libtiff5-dev \
         pkg-config \
