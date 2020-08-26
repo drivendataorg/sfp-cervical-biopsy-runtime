@@ -88,12 +88,13 @@ def get_tissue_mask(path: Path, level: int = 6):
 
 def get_tissue_tile_indices(
     path: Path,
-    level: int = 6,
+    level: int = 5,
+    base_level: int = 0,
     tile_width: int = 512,
     tile_height: int = 512,
     threshold: float = 0.2,
 ):
-    downsample_factor = 2 ** level
+    downsample_factor = 2 ** (level - base_level)
     mask_tile_width, remainder = divmod(tile_width, downsample_factor)
     assert (
         remainder == 0
@@ -130,7 +131,7 @@ class WholeSlideImageDataset(torch.utils.data.Dataset):
         ), "Image directory {image_directory} does not exist"
         for image_index, image_path in enumerate(image_directory.glob("*.tif")):
             image_paths.append(str(image_path))
-            for row, column in zip(*get_tissue_tile_indices(image_path)):
+            for row, column in zip(*get_tissue_tile_indices(image_path, base_level=1)):
                 indices.append(
                     {
                         "filename": image_path.name,
@@ -158,7 +159,9 @@ class WholeSlideImageDataset(torch.utils.data.Dataset):
 
     def __getitem__(self, index):
         index = self.indices[index]
-        image = pyvips.Image.new_from_file(self.image_paths[index["image_index"]])
+        image = pyvips.Image.new_from_file(
+            self.image_paths[index["image_index"]], page=1
+        )
 
         tile = pyvips.Region.new(image).fetch(
             index["column"] * self.tile_width,
@@ -190,11 +193,6 @@ def perform_inference(batch_size: int = 16):
     dataset = WholeSlideImageDataset(transform=transform)
 
     logging.info("Starting inference.")
-    # Preallocate prediction output
-    submission_format = pd.read_csv(
-        DATA_DIRECTORY / "submission_format.csv", index_col="filename"
-    )
-
     data_generator = torch.utils.data.DataLoader(
         dataset, batch_size=batch_size, shuffle=False, num_workers=4,
     )
@@ -227,6 +225,12 @@ def perform_inference(batch_size: int = 16):
     predictions = pd.DataFrame(predictions)
     submission = predictions.groupby("slide").label.max()
     logging.info("Creating submission.")
+
+    # Preallocate prediction output
+    submission_format = pd.read_csv(
+        DATA_DIRECTORY / "submission_format.csv", index_col="filename"
+    )
+
     submission = submission.loc[submission_format.index]
     assert (submission.index == submission_format.index).all()
 
