@@ -24,6 +24,5 @@ dependencies:
   - torchvision=0.7.0=py38_cu102
   - xgboost=1.2.0=py38h950e882_0
   - pip:
-    - pkgconfig==1.5.1
     - pyvips==2.1.12
 prefix: /opt/conda/envs/py-cpu
