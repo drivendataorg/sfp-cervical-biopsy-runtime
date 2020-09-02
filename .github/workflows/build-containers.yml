@@ -31,12 +31,12 @@ jobs:
           docker build runtime --build-arg CPU_GPU=${{ matrix.proc }} --tag $CONTAINER:$SHA_TAG --cache-from $CONTAINER:$LATEST_TAG
           docker build runtime --build-arg CPU_GPU=${{ matrix.proc }} --tag $CONTAINER:$LATEST_TAG --cache-from $CONTAINER:$LATEST_TAG
 
-      # - name: Tests container packages
-      #   run: |
-      #     docker run --mount type=bind,source=$(pwd)/runtime/run-tests.sh,target=/run-tests.sh,readonly \
-      #       --mount type=bind,source=$(pwd)/runtime/tests,target=/tests,readonly \
-      #       $CONTAINER:$GITHUB_SHA \
-      #       /bin/bash -c "bash /run-tests.sh ${{ matrix.proc }}"
+      - name: Tests container packages
+        run: |
+          docker run --mount type=bind,source=$(pwd)/runtime/run-tests.sh,target=/run-tests.sh,readonly \
+            --mount type=bind,source=$(pwd)/runtime/tests,target=/tests,readonly \
+            $CONTAINER:$GITHUB_SHA \
+            /bin/bash -c "bash /run-tests.sh ${{ matrix.proc }}"
 
       - name: Publish container if master branch
         if: github.ref == 'refs/heads/master'
