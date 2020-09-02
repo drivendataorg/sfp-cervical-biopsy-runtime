@@ -17,15 +17,18 @@ jobs:
         os: ['ubuntu-latest']
         proc: ['cpu', 'gpu']
     env:
-      CONTAINER: ghcr.io/drivendataorg/sfp-cervical-biopsy-${{ matrix.proc }}
+      CONTAINER: drivendata/sfp-competition
+      SHA_TAG: ${{ matrix.proc }}-${{ github.sha }}
+      LATEST_TAG: ${{ matrix.proc }}-latest
 
     steps:
       - uses: actions/checkout@v2
 
       - name: Build ${{ matrix.proc }} Conatiner
         run: |
-          echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u pjbull --password-stdin
-          docker build runtime --build-arg CPU_GPU=cpu --tag $CONTAINER:$GITHUB_SHA
+          echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+          docker build runtime --build-arg CPU_GPU=${{ matrix.proc }} --tag $CONTAINER:$SHA_TAG
+          docker build runtime --build-arg CPU_GPU=${{ matrix.proc }} --tag $CONTAINER:$LATEST_TAG
 
       # - name: Tests container packages
       #   run: |
@@ -34,8 +37,9 @@ jobs:
       #       $CONTAINER:$GITHUB_SHA \
       #       /bin/bash -c "bash /run-tests.sh ${{ matrix.proc }}"
 
-      - name: Publish container
+      - name: Publish container if master branch
         if: github.ref == 'refs/heads/master'
         run: |
-          echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u pjbull --password-stdin
-          docker push $CONTAINER:$GITHUB_SHA
+          echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+          docker push $CONTAINER:$SHA_TAG
+          docker push $CONTAINER:$LATEST_TAG
