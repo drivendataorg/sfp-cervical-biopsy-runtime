@@ -4,9 +4,9 @@ name: Build, test and publish container
 on:
   push:
     branches: [master]
-    paths: ['runtime/**']
+    paths: ['runtime/**', '.github/workflows/**']
   pull_request:
-    paths: ['runtime/**']
+    paths: ['runtime/**', '.github/workflows/**']
 
 jobs:
   build:
