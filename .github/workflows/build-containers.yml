@@ -35,7 +35,7 @@ jobs:
       #       /bin/bash -c "bash /run-tests.sh ${{ matrix.proc }}"
 
       - name: Publish container
-        if: ${{ github.ref == 'master' }}
+        if: github.ref == 'refs/heads/master'
         run: |
           echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u pjbull --password-stdin
           docker push $CONTAINER:$GITHUB_SHA
