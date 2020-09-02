@@ -23,11 +23,6 @@ exit_code=0
         source activate py-$processor
         echo "Running submission with Python"
         python main.py
-    elif [ -f "main.R" ]
-    then
-        source activate r-$processor
-        echo "Running submission with R"
-        R -f main.R
     else
         echo "ERROR: Could not find main.py or main.R in submission.zip"
         exit_code=1

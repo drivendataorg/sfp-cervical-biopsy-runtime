@@ -2,12 +2,7 @@
 set -e
 
 # which language; default py for python
-lang=${1-py}
-
-if [ "$lang" != 'py' ] && [ "$lang" != 'r' ]; then
-    echo "Please pass 'py' or 'r'. You specified '$1'."
-    exit 1
-fi
+lang=py
 
 # clean existing submission
 if [ -f submission/submission.zip ]; then
