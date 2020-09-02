@@ -34,7 +34,7 @@ jobs:
         run: |
           docker run --mount type=bind,source=$(pwd)/runtime/run-tests.sh,target=/run-tests.sh,readonly \
             --mount type=bind,source=$(pwd)/runtime/tests,target=/tests,readonly \
-            $CONTAINER:$GITHUB_SHA \
+            $CONTAINER:$SHA_TAG \
             /bin/bash -c "bash /run-tests.sh ${{ matrix.proc }}"
 
       - name: Publish container if master branch
