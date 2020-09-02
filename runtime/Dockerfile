@@ -39,7 +39,6 @@ USER 1000
 # install miniconda as system python
 COPY ./Miniconda3-py37_4.8.3-Linux-x86_64.sh /opt/miniconda.sh 
 RUN /bin/bash /opt/miniconda.sh -b -p /opt/conda
-RUN rm /opt/miniconda.sh
 
 ENV PATH /opt/conda/bin:$PATH
 COPY ./py-${CPU_GPU}.yml /envs/

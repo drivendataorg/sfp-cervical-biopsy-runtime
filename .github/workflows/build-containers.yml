@@ -27,9 +27,8 @@ jobs:
       - name: Build ${{ matrix.proc }} Conatiner
         run: |
           echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-          docker pull $CONTAINER:$LATEST_TAG
-          docker build runtime --build-arg CPU_GPU=${{ matrix.proc }} --tag $CONTAINER:$SHA_TAG --cache-from $CONTAINER:$LATEST_TAG
-          docker build runtime --build-arg CPU_GPU=${{ matrix.proc }} --tag $CONTAINER:$LATEST_TAG --cache-from $CONTAINER:$LATEST_TAG
+          docker build runtime --build-arg CPU_GPU=${{ matrix.proc }} --tag $CONTAINER:$SHA_TAG
+          docker build runtime --build-arg CPU_GPU=${{ matrix.proc }} --tag $CONTAINER:$LATEST_TAG
 
       - name: Tests container packages
         run: |
