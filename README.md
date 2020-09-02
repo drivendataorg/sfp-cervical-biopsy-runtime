@@ -18,17 +18,9 @@ If you're new to the GitHub contribution workflow, check out [this guide by GitH
 
 We use [conda](https://docs.conda.io/en/latest/) to manage Python dependencies. Add your new dependencies to both `runtime/py-cpu.yml` and `runtime/py-gpu.yml`. Please also add your dependencies to `runtime/tests/test-installs.py`, below the line `## ADD ADDITIONAL REQUIREMENTS BELOW HERE ##`.
 
-### R
-
-We prefer to use conda to manage R dependencies. Take a look at what packages are available from [Anaconda's `pkgs/r`](https://repo.anaconda.com/pkgs/r/) and from [`conda-forge`](https://conda-forge.org/feedstocks/). Note that R packages in conda typically start with the prefix `r-`. Add your new dependencies to both `runtime/r-cpu.yml` and `runtime/r-gpu.yml`.
-
-If your dependencies are not available from the Anaconda or `conda-forge`, you can also add installation code to both the install scripts `runtime/package-installs-cpu.R` and `runtime/package-installs-gpu.R` to install from CRAN or GitHub.
-
-Please also add your dependencies to `runtime/tests/test-installs.R`, below the line `## ADD ADDITIONAL REQUIREMENTS BELOW HERE ##`.
-
 ### Testing new dependencies locally
 
-Please test your new dependency locally by recreating the relevant conda environment using the associated `.yml` file (and running the associated `package-installs-*.R` script if R). Try activating that environment and loading your new dependency.
+Please test your new dependency locally by recreating the relevant conda environment using the associated `.yml` file. Try activating that environment and loading your new dependency.
 
 If you would like to locally run our CI test (this requires [Docker](https://www.docker.com/products/docker-desktop)), you can use:
 

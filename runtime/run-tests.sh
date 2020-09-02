@@ -14,7 +14,3 @@ source activate py-$processor
 echo "Running Python tests"
 python tests/test-installs.py
 
-echo "Testing environment r-$processor"
-source activate r-$processor
-echo "Running R tests"
-Rscript tests/test-installs.R
