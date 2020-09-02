@@ -1,5 +1,5 @@
 
-name: Test
+name: Build, test and publish container
 
 on:
   push:
@@ -20,12 +20,12 @@ jobs:
       CONTAINER: ghcr.io/drivendataorg/sfp-cervical-biopsy-${{ matrix.proc }}
 
     steps:
+      - uses: actions/checkout@v2
+
       - name: Build ${{ matrix.proc }} Conatiner
         run: |
           echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u pjbull --password-stdin
-          pwd
-          ls
-          docker build ./runtime --build-arg CPU_GPU=cpu --tag $CONTAINER:$GITHUB_SHA
+          docker build runtime --build-arg CPU_GPU=cpu --tag $CONTAINER:$GITHUB_SHA
 
       - name: Tests container packages
         run: |
@@ -34,3 +34,8 @@ jobs:
             $CONTAINER:$GITHUB_SHA \
             /bin/bash -c "bash /run-tests.sh ${{ matrix.proc }}"
 
+      - name: Publish container
+        if: ${{ github.ref == 'master' }}
+        run: |
+          echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u pjbull --password-stdin
+          echo "publish"      
