@@ -14,6 +14,7 @@ packages = [
     "numpy",
     "pandas",
     "PIL",  # pillow
+    "pyvips",
     "skimage",  # scikit-image
     "sklearn",  # scikit-learn
     "scipy",
