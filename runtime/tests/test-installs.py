@@ -6,19 +6,19 @@ logging.getLogger('').setLevel(logging.INFO)
 logging.info("Testing if Python packages can be loaded correctly.")
 
 packages = [
+    "cv2",  # opencv
+    "dotenv",
     "fastai",
     "lightgbm",
     "mahotas",
-    "cv2",  # opencv
+    "numpy",
     "pandas",
     "PIL",  # pillow
-    "dotenv",
-    "numpy",
-    "torch",  # pytorch
     "skimage",  # scikit-image
     "sklearn",  # scikit-learn
     "scipy",
     "tensorflow",
+    "torch",  # pytorch
     "torchvision",
     "xgboost",
     # ADD ADDITIONAL REQUIREMENTS BELOW HERE #
