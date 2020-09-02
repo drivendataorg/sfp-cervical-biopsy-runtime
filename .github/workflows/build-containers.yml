@@ -4,9 +4,9 @@ name: Build, test and publish container
 on:
   push:
     branches: [master]
-    # paths: ['runtime/**']
+    paths: ['runtime/**']
   pull_request:
-    # paths: ['runtime/**']
+    paths: ['runtime/**']
 
 jobs:
   build:
@@ -27,15 +27,15 @@ jobs:
           echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u pjbull --password-stdin
           docker build runtime --build-arg CPU_GPU=cpu --tag $CONTAINER:$GITHUB_SHA
 
-      - name: Tests container packages
-        run: |
-          docker run --mount type=bind,source=$(pwd)/runtime/run-tests.sh,target=/run-tests.sh,readonly \
-            --mount type=bind,source=$(pwd)/runtime/tests,target=/tests,readonly \
-            $CONTAINER:$GITHUB_SHA \
-            /bin/bash -c "bash /run-tests.sh ${{ matrix.proc }}"
+      # - name: Tests container packages
+      #   run: |
+      #     docker run --mount type=bind,source=$(pwd)/runtime/run-tests.sh,target=/run-tests.sh,readonly \
+      #       --mount type=bind,source=$(pwd)/runtime/tests,target=/tests,readonly \
+      #       $CONTAINER:$GITHUB_SHA \
+      #       /bin/bash -c "bash /run-tests.sh ${{ matrix.proc }}"
 
       - name: Publish container
         if: ${{ github.ref == 'master' }}
         run: |
           echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u pjbull --password-stdin
-          echo "publish"      
+          docker push $CONTAINER:$GITHUB_SHA
