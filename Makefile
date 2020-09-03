@@ -1,5 +1,9 @@
 .PHONY: build pull test-container debug-container test-submission
 
+# ================================================================================================
+# Settings
+# ================================================================================================
+
 _NVIDIA = $(which nvidia-smi)
 ifdef (_NVIDIA)
 	CPU_OR_GPU = gpu
@@ -21,13 +25,13 @@ SUBMISSION_IMAGE ?= $(shell docker images -q ${LOCAL_IMAGE})
 SUBMISSION_IMAGE ?= $(shell docker images -q ${IMAGE})
 
 
+# ================================================================================================
+# Commands for building the container if you are changing the requirements
+# ================================================================================================
+
 ## Builds the container locally, tagging it with cpu-local or gpu-local
 build:
 	docker build --build-arg CPU_GPU=${CPU_OR_GPU} -t ${LOCAL_IMAGE} runtime
-
-## Pulls the official container tagged cpu-latest or gpu-latest from Docker hub
-pull:
-	docker pull ${IMAGE}
 
 ## Ensures that your locally built container can import all the Python packages successfully when it runs
 test-container: build
@@ -48,6 +52,15 @@ debug-container: build
 		-it \
 		${LOCAL_IMAGE} \
 		/bin/bash
+
+
+# ================================================================================================
+# Commands for testing that your submission.zip will execute
+# ================================================================================================
+
+## Pulls the official container tagged cpu-latest or gpu-latest from Docker hub
+pull:
+	docker pull ${IMAGE}
 
 ## Creates a submission/submission.zip file from whatever is in the "benchmark" folder
 pack-benchmark:
