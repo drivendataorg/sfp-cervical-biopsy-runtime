@@ -5,7 +5,7 @@
 # ================================================================================================
 
 _NVIDIA = $(which nvidia-smi)
-ifdef (_NVIDIA)
+ifneq (,_NVIDIA)
 	CPU_OR_GPU = gpu
 	GPU_ARGS = --gpus all
 else
