@@ -1,26 +1,26 @@
-# Société Française de Pathologie: Cervical Biopsy Challenge
+# TissueNet: Detect Lesions in Cervical Biopsies
 
-Welcome to the runtime repository for the SFP Cervical Biopsy challenge. This repo contains the definition of the environment where your code submissions will run. It specifies both the operating system and the Python packages that will be available to your solution.
+Welcome to the runtime repository for the [SFP Cervical Biopsy challenge](https://www.drivendata.org/competitions/67/competition-cervical-biopsy/). This repo contains the definition of the environment where your code submissions will run. It specifies both the operating system and the Python packages that will be available to your solution.
 
 This repository has two primary uses for competitors:
 
  - (1) It lets you test your `submission.zip` file with a locally running version of the container so you don't have to wait for it to process on the competition site to find programming errors.
- - (2) It lets you test adding additional Python packages to the official runtime environment. You can then submit PR to request those packages be included in the container image.
+ - (2) It lets you test adding additional Python packages to the official runtime environment. You can then submit a PR to request those packages be included in the container image.
 
 #### Contents:
 
- - (0) [Getting started](#0-getting-started)
-        - [Prerequisites](#prerequisites)
-        - [Quickstart](#quickstart)
+ - ### [Getting started](#0-getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Quickstart](#quickstart)
 
- - (1) [Testing your submission.zip](#1-testing-your-submissionzip)
+ - ### [Testing your submission.zip](#1-testing-your-submissionzip)
     - [Implement your solution](#implement-your-solution)
     - [How your submission will run](#how-your-submission-will-run)
     - [Test running your submission locally](#test-running-your-submission-locally)
         - [Making a submission](#making-a-submission)
         - [Reviewing the logs](#reviewing-the-logs)
 
- - (2) [Updating the runtime packages](#2-updating-the-runtime-packages)
+ - ### [Updating the runtime packages](#2-updating-the-runtime-packages)
     - [Adding new Python packages](#adding-dependencies-to-the-runtime)
     - [Testing new dependencies](#testing-new-dependencies)
     - [Submitting a PR](#opening-a-pull-request)
