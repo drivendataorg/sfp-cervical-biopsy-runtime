@@ -106,13 +106,11 @@ When you execute the container locally, we will mount two subfolders in this rep
 
 Your `submission.zip` file must exist in the `submission` folder here in order to be processed when you are testing execution locally.
 
-To prepare the example submission and put it into the submission folder, run the following command in the terminal:
+To prepare the example submission and put it into the submission folder, first check if you already have a file named `submission.zip` in the `submission` folder. If so, you'll need to remove it (we don't do it automatically so that you don't accidentally lose your work). Then run:
 
 ```bash
 make pack-benchmark
 ```
-
-If you already have a file named `submission.zip` in the `submission` folder you will need to remove that. We don't do it automatically so that you don't accidentally lose your work.
 
 ## Test running your submission locally
 
