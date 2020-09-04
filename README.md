@@ -89,7 +89,7 @@ In order to test your code submission, you will need a code submission! You will
 
 The [submission format page](https://www.drivendata.org/competitions/67/competition-cervical-biopsy/page/257/) contains the detailed information you need to prepare your submission.
 
-## How your submission will run
+### How your submission will run
 
 Your submission will be unzipped into the working directory `/inference`. We will then run a Python process in that working directory to execute the `main.py` extracted from your submission. This `main.py` should read the `submission_format.csv` and `test_metadata.csv` files from `/inference/data`. The test images will also exist within the folder `/inference/data`. On the DrivenData platform, `/inference/data` will have the actual test images, and matching `submission_format.csv` and `test_metadata.csv`. Since you do not have the test set images, you should update the ones here to reference versions of the images from the training set. You should add the same test set images that appear here.
 
@@ -112,7 +112,7 @@ To prepare the example submission and put it into the submission folder, first c
 make pack-benchmark
 ```
 
-## Test running your submission locally
+### Test running your submission locally
 
 You can execute the same containers locally that we will use on the DrivenData platform to ensure your code will run.
 
