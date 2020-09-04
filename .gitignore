@@ -1,2 +1,7 @@
 submission/
 !submission/.gitkeep
+
+inference-data/
+!inference-data/.gitkeep
+!inference-data/submission_format.csv
+!inference-data/test_metadata.csv
