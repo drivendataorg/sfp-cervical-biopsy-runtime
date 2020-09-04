@@ -4,12 +4,11 @@
 # Settings
 # ================================================================================================
 
-_NVIDIA = $(which nvidia-smi)
-ifneq (,_NVIDIA)
-	CPU_OR_GPU = gpu
-	GPU_ARGS = --gpus all
+ifeq (, $(shell which nvidia-smi))
+CPU_OR_GPU = cpu
 else
-	CPU_OR_GPU = cpu
+CPU_OR_GPU = gpu
+GPU_ARGS = --gpus all
 endif
 
 REPO = drivendata/sfp-competition
@@ -61,6 +60,11 @@ debug-container: build
 ## Pulls the official container tagged cpu-latest or gpu-latest from Docker hub
 pull:
 	docker pull ${IMAGE}
+
+## Download the 3 sample images from infeerence-data/test_metadata.csv (300 MB)
+sample-images:
+	# since this is the train metadata, we actually have URLs for downloading in this file
+	tail -n 3 inference-data/test_metadata.csv | awk -F , '{print $$7}' | xargs -I '{}' aws s3 cp '{}' inference-data/
 
 ## Creates a submission/submission.zip file from whatever is in the "benchmark" folder
 pack-benchmark:
@@ -125,7 +129,7 @@ help:
 	@echo SUBMISSION_IMAGE=${SUBMISSION_IMAGE}  "\t# ID of the image that will be used when running test-submission"
 	@echo
 	@echo "$$(tput bold)Available competition images:$$(tput sgr0)"
-	@echo "$(shell docker images --format '{{.Repository}}:{{.Tag}}({{.ID}}}), ' ${REPO})"
+	@echo "$(shell docker images --format '{{.Repository}}:{{.Tag}} ({{.ID}}); ' ${REPO})"
 	@echo
 	@echo "$$(tput bold)Available commands:$$(tput sgr0)"
 	@echo
