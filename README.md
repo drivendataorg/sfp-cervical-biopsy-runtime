@@ -4,8 +4,10 @@ Welcome to the runtime repository for the [SFP Cervical Biopsy challenge](https:
 
 This repository has two primary uses for competitors:
 
- - (1) It lets you test your `submission.zip` file with a locally running version of the container so you don't have to wait for it to process on the competition site to find programming errors.
- - (2) It lets you test adding additional Python packages to the official runtime environment. You can then submit a PR to request those packages be included in the container image.
+ - **Testing your code submission**: It lets you test your `submission.zip` file with a locally running version of the container so you don't have to wait for it to process on the competition site to find programming errors.
+ - **Requesting new packages in the official runtime**: It lets you test adding additional Python packages to the official runtime environment. You can then submit a PR to request those packages be included in the container image.
+ 
+ ----
 
 ### [Getting started](#0-getting-started)
  - [Prerequisites](#prerequisites)
@@ -21,6 +23,7 @@ This repository has two primary uses for competitors:
  - [Testing new dependencies](#testing-new-dependencies)
  - [Submitting a PR](#opening-a-pull-request)
 
+----
 
 ## (0) Getting started
 
@@ -29,16 +32,18 @@ This repository has two primary uses for competitors:
 Make sure you have the prerequisites installed.
 
  - A clone or fork of this repository
- - docker
- - GNU make (optional, but useful for using the commands in the Makefile)
+ - [Docker](https://docs.docker.com/get-docker/)
  - At least ~10GB of free space for both the training images and the Docker container images
+ - GNU make (optional, but useful for using the commands in the Makefile)
+ - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html) (Optional, but useful for the `make sample-images` command which downloads images from S3
 
 Additional requirements to run with GPU:
- - NVIDIA drivers and container runtime: [Follow these instructions](https://docs.docker.com/config/containers/resource_constraints/#gpu)
+ - [NVIDIA drivers](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#package-manager-installation) (we check whether you have `nvidia-smi` installed and enabled to automatically determine whether to build the cpu or gpu image)
+ - [NVIDIA Docker container runtime](https://nvidia.github.io/nvidia-container-runtime/) 
 
 ### Quickstart
 
-To test out the full execution pipeline, run the following commands in order in the terminal. These will get the Docker images, download a few training images with which to test the execution, zip up an example submission script, and submit that submission.zip to your locally running version of the container.
+To test out the full execution pipeline, run the following commands in order in the terminal. These will get the Docker images, download a few training images (3 images, ~300 MB) with which to test the execution, zip up an example submission script, and submit that submission.zip to your locally running version of the container.
 
 ```
 make pull
@@ -57,24 +62,21 @@ Running `make` at the terminal will tell you all the commands available in the r
 
 ```
 Settings based on your machine:
-CPU_OR_GPU=gpu 			# Whether or not to try to build, download, and run GPU versions
-SUBMISSION_IMAGE=8edab2591180 	# ID of the image that will be used when running test-submission
+CPU_OR_GPU=cpu 			# Whether or not to try to build, download, and run GPU versions
+SUBMISSION_IMAGE=925a59ad1b19 	# ID of the image that will be used when running test-submission
 
 Available competition images:
-drivendata/sfp-competition:gpu-latest(297317990f76}), drivendata/sfp-competition:gpu-local(8edab2591180}),
+drivendata/sfp-competition:cpu-local (925a59ad1b19); drivendata/sfp-competition:cpu-latest (09768914d125);
 
 Available commands:
 
 build               Builds the container locally, tagging it with cpu-local or gpu-local
-debug-container     Start your locally built container and open a bash shell within the running
-                    container; same as submission setup except has network access
+debug-container     Start your locally built container and open a bash shell within the running container; same as submission setup except has network access
 pack-benchmark      Creates a submission/submission.zip file from whatever is in the "benchmark" folder
-pull                Pulls the official container tagged cpu-latest or gpu-latest from Docker
-hub                 # TODO: ADD DESCRIPTION
-test-container      Ensures that your locally built container can import all the Python packages
-                    successfully when it runs
-test-submission     Runs container with submission/submission.zip as your submission and inference-data
-                    as the data to work with
+pull                Pulls the official container tagged cpu-latest or gpu-latest from Docker hub
+sample-images       Download the 3 sample images from infeerence-data/test_metadata.csv (300 MB)
+test-container      Ensures that your locally built container can import all the Python packages successfully when it runs
+test-submission     Runs container with submission/submission.zip as your submission and inference-data as the data to work with
 ```
 
 To find out more about what these commands do, keep reading! :eyes:
@@ -91,32 +93,38 @@ The [submission format page](https://www.drivendata.org/competitions/67/competit
 
 ### How your submission will run
 
-Your submission will be unzipped into the working directory `/inference`. We will then run a Python process in that working directory to execute the `main.py` extracted from your submission. This `main.py` should read the `submission_format.csv` and `test_metadata.csv` files from `/inference/data`. The test images will also exist within the folder `/inference/data`. On the DrivenData platform, `/inference/data` will have the actual test images, and matching `submission_format.csv` and `test_metadata.csv`. Since you do not have the test set images, you should update the ones here to reference versions of the images from the training set. You should add the same test set images that appear here.
+Your submission will run inside a virtual operating system within the container that Docker runs on your machine (your computer is the "host" for the container). Within that virtual operating system, `/inference/data` will point to whatever is in your host machine's `inference-data` folder. `/inference/submission` will point to whatever is in your host machine's `submission` folder.
 
-Running this command will download three images to that folder which match the metadata and can be used for testing:
+The script to execute the submission will unzip the contents of `/inference/submission/submssion.zip` into the `/inference` folder. This should create a `main.py` file at `/inference/main.py`.
+
+We will then run a Python process in `/inference` to execute the `main.py` extracted from `submission.zip`. This `main.py` should read the `submission_format.csv` and `test_metadata.csv` files from `/inference/data`. On the DrivenData platform, `/inference/data` will have the actual test images, and the matching `submission_format.csv` and `test_metadata.csv`. In this repo, the `make sample-images` command will download 3 images from the training set that match the metadata and submission_format provided in this repo. You can use these 3 images to ensure your submission runs, but the metadata, submission format, and images on the DrivenData platform will be the actual test set. (You could use whatever images you want from the training set for local testing as long as they are in the `inference-data` folder and the corresponding entries for those files are in `inference-data/test_metadata.csv` and `inference-data/submission_format.csv`.
+
+Running this command will download three images (~300 MB) to `infernce-data` which match the metadata provided in this repo and can be used for testing:
 
 ```bash
 make sample-images
 ```
 
-When you execute the container locally, we will mount two subfolders in this repository into the containter:
+As mentioned, when you execute the container locally, we will mount two subfolders in this repository into the containter:
 
 - the `inference-data` directory is mounted in your locally running container as a read-only directory `/inference/data`
--  the `submission` directory is mounted in your locally running container as `/inference/submission`
+- the `submission` directory is mounted in your locally running container as `/inference/submission`
 
-Your `submission.zip` file must exist in the `submission` folder here in order to be processed when you are testing execution locally.
+Your `submission.zip` file must exist in the `submission` folder on your host machine in order to be processed when you are testing execution locally.
 
-To prepare the example submission and put it into the submission folder, first check if you already have a file named `submission.zip` in the `submission` folder. If so, you'll need to remove it (we don't do it automatically so that you don't accidentally lose your work). Then run:
+The `make pack-benchmark` command will create a zipfile of everything in the `benchmark` folder and save that to `submission/submission.zip`. To prepare the example submission and put it into the submission folder, just run this command:
 
 ```bash
 make pack-benchmark
 ```
 
+When you run this in the future, you should check and remove any existing `submission/submission.zip` file. The `make pack-benchmark` command does not overwrite this file (so we won't accidentally lose your work).
+
 ### Test running your submission locally
 
 You can execute the same containers locally that we will use on the DrivenData platform to ensure your code will run.
 
-Make sure you have the [prequisites](#prequisites) installed. Then, you can run the following command within the repository to download the official image:
+Make sure you have the [prerequisites](#prerequisites) installed. Then, you can run the following command within the repository to download the official image:
 
 ```bash
 make pull
@@ -157,15 +165,17 @@ Your new dependency should follow the format in the yml and be pinned to a parti
 
 Please test your new dependency locally by recreating the relevant conda environment using the appropriate CPU or GPU `.yml` file. Try activating that environment and loading your new dependency.
 
-Once that works, you'll want to make sure it works within the container as well. To do so, you can run (note this will run `make build` to create the new container image automatically, but you could also do it manually):
+Once that works, you'll want to make sure it works within the container as well. To do so, you can run:
 
 ```
 make test-container
 ```
 
+Note: this will run `make build` to create the new container image with your changes automatically, but you could also do it manually.
+
 This will build a local version of the official container and then run the import tests to make sure the relevant libraries can all be successfully loaded. This must pass before you submit a pull request to our repo to update the requirements. If it does not, you'll want to figure out what else you need to make the dependencies happy.
 
-This command will run a bash shell in the container to let you interact with it. Make sure to activate the `conda` environment if you want to test the dependencies!
+If you have problems, the following command will run a bash shell in the container to let you interact with it. Make sure to activate the `conda` environment (e.g., `conda activate py-cpu`) when you start the container if you want to test the dependencies!
 
 ```
 make debug-container
