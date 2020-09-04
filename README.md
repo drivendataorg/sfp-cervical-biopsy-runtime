@@ -147,7 +147,7 @@ We accept contributions to add dependencies to the runtime environment. To do so
 
 If you're new to the GitHub contribution workflow, check out [this guide by GitHub](https://guides.github.com/activities/forking/).
 
-## Adding dependencies to the runtime
+### Adding dependencies to the runtime
 
 We use [conda](https://docs.conda.io/en/latest/) to manage Python dependencies. Add your new dependencies to both `runtime/py-cpu.yml` and `runtime/py-gpu.yml`. Please also add your dependencies to `runtime/tests/test-installs.py`, below the line `## ADD ADDITIONAL REQUIREMENTS BELOW HERE ##`.
 
