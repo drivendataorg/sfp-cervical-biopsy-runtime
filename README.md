@@ -35,7 +35,7 @@ Make sure you have the prerequisites installed.
  - [Docker](https://docs.docker.com/get-docker/)
  - At least ~10GB of free space for both the training images and the Docker container images
  - GNU make (optional, but useful for using the commands in the Makefile)
- - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html) (Optional, but useful for the `make sample-images` command which downloads images from S3
+ - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html) (Optional, but useful for the `make sample-images` command which downloads images from S3)
 
 Additional requirements to run with GPU:
  - [NVIDIA drivers](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#package-manager-installation) (we check whether you have `nvidia-smi` installed and enabled to automatically determine whether to build the cpu or gpu image)
