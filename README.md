@@ -7,24 +7,19 @@ This repository has two primary uses for competitors:
  - (1) It lets you test your `submission.zip` file with a locally running version of the container so you don't have to wait for it to process on the competition site to find programming errors.
  - (2) It lets you test adding additional Python packages to the official runtime environment. You can then submit a PR to request those packages be included in the container image.
 
-#### Contents:
-
- - ### [Getting started](#0-getting-started)
-    - [Prerequisites](#prerequisites)
-    - [Quickstart](#quickstart)
-
- - ### [Testing your submission.zip](#1-testing-your-submissionzip)
-    - [Implement your solution](#implement-your-solution)
-    - [How your submission will run](#how-your-submission-will-run)
-    - [Test running your submission locally](#test-running-your-submission-locally)
-        - [Making a submission](#making-a-submission)
-        - [Reviewing the logs](#reviewing-the-logs)
-
- - ### [Updating the runtime packages](#2-updating-the-runtime-packages)
-    - [Adding new Python packages](#adding-dependencies-to-the-runtime)
-    - [Testing new dependencies](#testing-new-dependencies)
-    - [Submitting a PR](#opening-a-pull-request)
-
+### [Getting started](#0-getting-started)
+ - [Prerequisites](#prerequisites)
+ - [Quickstart](#quickstart)
+### [Testing your submission.zip](#1-testing-your-submissionzip)
+ - [Implement your solution](#implement-your-solution)
+ - [How your submission will run](#how-your-submission-will-run)
+ - [Test running your submission locally](#test-running-your-submission-locally)
+   - [Making a submission](#making-a-submission)
+   - [Reviewing the logs](#reviewing-the-logs)
+### [Updating the runtime packages](#2-updating-the-runtime-packages)
+ - [Adding new Python packages](#adding-dependencies-to-the-runtime)
+ - [Testing new dependencies](#testing-new-dependencies)
+ - [Submitting a PR](#opening-a-pull-request)
 
 
 ## (0) Getting started
