@@ -1,0 +1,39 @@
+
+name: Test submission commands in Makefile
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  build:
+    name: Pull images, pack benchmark, test-submission
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: ['ubuntu-latest']
+        proc: ['cpu']
+    env:
+      CONTAINER: drivendata/sfp-competition
+      SHA_TAG: ${{ matrix.proc }}-${{ github.sha }}
+      LATEST_TAG: ${{ matrix.proc }}-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Pull public ${{ matrix.proc }} Conatiner
+        run: |
+          make pull
+
+      - name: Test zipping benchmark
+        run: |
+          make pack-benchmark
+
+      - name: Test retreiving sample images
+        run: |
+          make sample-images
+  
+      - name: Submit submission and run in container
+        run: |
+          make test-submission
