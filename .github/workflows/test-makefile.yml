@@ -32,4 +32,6 @@ jobs:
   
       - name: Submit submission and run in container
         run: |
-          make pull && make test-submission
+          make pull
+          sleep 10
+          make test-submission
