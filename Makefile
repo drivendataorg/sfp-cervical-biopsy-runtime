@@ -26,6 +26,10 @@ ifeq (,${SUBMISSION_IMAGE})
 SUBMISSION_IMAGE := $(shell docker images -q ${IMAGE})
 endif
 
+# Give write access to the submission folder to everyone so Docker user can write when mounted
+_submission_write_perms:
+	chmod -R 0777 submission/
+
 # ================================================================================================
 # Commands for building the container if you are changing the requirements
 # ================================================================================================
@@ -35,7 +39,7 @@ build:
 	docker build --build-arg CPU_GPU=${CPU_OR_GPU} -t ${LOCAL_IMAGE} runtime
 
 ## Ensures that your locally built container can import all the Python packages successfully when it runs
-test-container: build
+test-container: build _submission_write_perms
 	docker run \
 		${GPU_ARGS} \
 		--mount type=bind,source=$(shell pwd)/runtime/run-tests.sh,target=/run-tests.sh,readonly \
@@ -44,7 +48,7 @@ test-container: build
 		/bin/bash -c "bash /run-tests.sh ${CPU_OR_GPU}"
 
 ## Start your locally built container and open a bash shell within the running container; same as submission setup except has network access
-debug-container: build
+debug-container: build _submission_write_perms
 	docker run \
 		${GPU_ARGS} \
 		--mount type=bind,source=$(shell pwd)/inference-data,target=/inference/data,readonly \
@@ -81,7 +85,7 @@ endif
 
 
 ## Runs container with submission/submission.zip as your submission and inference-data as the data to work with
-test-submission:
+test-submission: _submission_write_perms
 	$(info Looking for image ${SUBMISSION_IMAGE}, identified in list: $(shell docker images -q ${IMAGE}))
 	$(info All Docker output: $(shell docker images))
 	$(info Queried Docker output for ${IMAGE}: $(shell docker images -q ${IMAGE}))
