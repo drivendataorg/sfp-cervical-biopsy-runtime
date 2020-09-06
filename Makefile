@@ -65,7 +65,7 @@ pull:
 sample-images:
 	# since this is the train metadata, we actually have URLs for downloading in this file
 	tail -n 3 inference-data/test_metadata.csv | awk -F , '{print $$7}' | xargs -I '{}' \
-	  aws s3 --no-sign-request --region=us-east-1 sync '{}' inference-data/
+	  aws s3 --no-sign-request --region=us-east-1 cp '{}' inference-data/
 
 ## Creates a submission/submission.zip file from whatever is in the "benchmark" folder
 pack-benchmark:
