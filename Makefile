@@ -66,7 +66,6 @@ debug-container: build _submission_write_perms
 ## Pulls the official container tagged cpu-latest or gpu-latest from Docker hub
 pull:
 	docker pull ${IMAGE}
-	$(info Pulling image ${IMAGE}, Docker output: $(shell docker images -q ${IMAGE}))
 
 ## Download the 3 sample images from infeerence-data/test_metadata.csv (300 MB)
 sample-images:
@@ -86,9 +85,6 @@ endif
 
 ## Runs container with submission/submission.zip as your submission and inference-data as the data to work with
 test-submission: _submission_write_perms
-	$(info Looking for image ${SUBMISSION_IMAGE}, identified in list: $(shell docker images -q ${IMAGE}))
-	$(info All Docker output: $(shell docker images))
-	$(info Queried Docker output for ${IMAGE}: $(shell docker images -q ${IMAGE}))
 
 # if submission file does not exist
 ifeq (,$(wildcard ./submission/submission.zip))
