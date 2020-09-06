@@ -20,9 +20,11 @@ IMAGE = ${REPO}:${TAG}
 LOCAL_IMAGE = ${REPO}:${LOCAL_TAG}
 
 # To run a submission, wse local version if that exists; otherwise, use official version
+# setting SUBMISSION_IMAGE as an environment variable will override the image
 SUBMISSION_IMAGE ?= $(shell docker images -q ${LOCAL_IMAGE})
-SUBMISSION_IMAGE ?= $(shell docker images -q ${IMAGE})
-
+ifeq (,${SUBMISSION_IMAGE})
+SUBMISSION_IMAGE := $(shell docker images -q ${IMAGE})
+endif
 
 # ================================================================================================
 # Commands for building the container if you are changing the requirements
