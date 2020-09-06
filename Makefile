@@ -64,7 +64,8 @@ pull:
 ## Download the 3 sample images from infeerence-data/test_metadata.csv (300 MB)
 sample-images:
 	# since this is the train metadata, we actually have URLs for downloading in this file
-	tail -n 3 inference-data/test_metadata.csv | awk -F , '{print $$7}' | xargs -I '{}' aws s3 cp '{}' inference-data/
+	tail -n 3 inference-data/test_metadata.csv | awk -F , '{print $$7}' | xargs -I '{}' \
+	  aws s3 --no-sign-request --region=us-east-1 cp '{}' inference-data/
 
 ## Creates a submission/submission.zip file from whatever is in the "benchmark" folder
 pack-benchmark:
@@ -79,7 +80,7 @@ endif
 ## Runs container with submission/submission.zip as your submission and inference-data as the data to work with
 test-submission:
 
-# if container does not exists, error and tell user to pull or build
+# if submission file does not exist
 ifeq (,$(wildcard ./submission/submission.zip))
 	$(error To test your submission, you must first put a "submission.zip" file in the "submission" folder. \
 	  If you want to use the benchmark, you can run `make pack-benchmark` first)

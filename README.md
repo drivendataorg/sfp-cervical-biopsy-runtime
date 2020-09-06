@@ -55,7 +55,22 @@ make test-submission
 You should see output like this in the end (and find the same logs in the folder `submission/log.txt`):
 
 ```
-TODO: log output
+docker run \
+		 \
+		--network none \
+		--mount type=bind,source=/Users/bull/code/sfp-cervical-biopsy-runtime/inference-data,target=/inference/data,readonly \
+		--mount type=bind,source=/Users/bull/code/sfp-cervical-biopsy-runtime/submission,target=/inference/submission \
+	   	--shm-size 8g \
+		925a59ad1b19
+GPU unavailable; falling back to CPU.
+Unpacking submission...
+Archive:  ./submission/submission.zip
+   creating: ./assets/
+  inflating: ./main.py
+Running submission with Python
+Exporting submission.csv result...
+Script completed its run.
+================ END ================
 ```
 
 Running `make` at the terminal will tell you all the commands available in the repository:
