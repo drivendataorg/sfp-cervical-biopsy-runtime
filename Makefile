@@ -80,7 +80,7 @@ endif
 ## Runs container with submission/submission.zip as your submission and inference-data as the data to work with
 test-submission:
 
-# if container does not exists, error and tell user to pull or build
+# if submission file does not exist
 ifeq (,$(wildcard ./submission/submission.zip))
 	$(error To test your submission, you must first put a "submission.zip" file in the "submission" folder. \
 	  If you want to use the benchmark, you can run `make pack-benchmark` first)

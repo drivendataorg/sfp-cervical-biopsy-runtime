@@ -1,5 +1,5 @@
 
-name: Build, test and publish container
+name: Build and publish container
 
 on:
   push:
