@@ -1,4 +1,4 @@
-.PHONY: build pull test-container debug-container test-submission
+.PHONY: build pull test-container debug-container test-submission sample-images pack-benchmark
 
 # ================================================================================================
 # Settings
@@ -20,9 +20,15 @@ IMAGE = ${REPO}:${TAG}
 LOCAL_IMAGE = ${REPO}:${LOCAL_TAG}
 
 # To run a submission, wse local version if that exists; otherwise, use official version
+# setting SUBMISSION_IMAGE as an environment variable will override the image
 SUBMISSION_IMAGE ?= $(shell docker images -q ${LOCAL_IMAGE})
-SUBMISSION_IMAGE ?= $(shell docker images -q ${IMAGE})
+ifeq (,${SUBMISSION_IMAGE})
+SUBMISSION_IMAGE := $(shell docker images -q ${IMAGE})
+endif
 
+# Give write access to the submission folder to everyone so Docker user can write when mounted
+_submission_write_perms:
+	chmod -R 0777 submission/
 
 # ================================================================================================
 # Commands for building the container if you are changing the requirements
@@ -33,7 +39,7 @@ build:
 	docker build --build-arg CPU_GPU=${CPU_OR_GPU} -t ${LOCAL_IMAGE} runtime
 
 ## Ensures that your locally built container can import all the Python packages successfully when it runs
-test-container: build
+test-container: build _submission_write_perms
 	docker run \
 		${GPU_ARGS} \
 		--mount type=bind,source=$(shell pwd)/runtime/run-tests.sh,target=/run-tests.sh,readonly \
@@ -42,7 +48,7 @@ test-container: build
 		/bin/bash -c "bash /run-tests.sh ${CPU_OR_GPU}"
 
 ## Start your locally built container and open a bash shell within the running container; same as submission setup except has network access
-debug-container: build
+debug-container: build _submission_write_perms
 	docker run \
 		${GPU_ARGS} \
 		--mount type=bind,source=$(shell pwd)/inference-data,target=/inference/data,readonly \
@@ -78,7 +84,7 @@ endif
 
 
 ## Runs container with submission/submission.zip as your submission and inference-data as the data to work with
-test-submission:
+test-submission: _submission_write_perms
 
 # if submission file does not exist
 ifeq (,$(wildcard ./submission/submission.zip))
