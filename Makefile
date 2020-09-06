@@ -1,4 +1,4 @@
-.PHONY: build pull test-container debug-container test-submission
+.PHONY: build pull test-container debug-container test-submission sample-images pack-benchmark
 
 # ================================================================================================
 # Settings
@@ -80,7 +80,7 @@ endif
 
 ## Runs container with submission/submission.zip as your submission and inference-data as the data to work with
 test-submission:
-	$(info Looking for image ${SUBMISSION_IMAGE}, identified in list: $(shell docker images -q ${SUBMISSION_IMAGE}))
+	$(info Looking for image ${SUBMISSION_IMAGE}, identified in list: $(shell docker images -q ${IMAGE}))
 	$(info All Docker output: $(shell docker images))
 	$(info Queried Docker output for ${IMAGE}: $(shell docker images -q ${IMAGE}))
 
