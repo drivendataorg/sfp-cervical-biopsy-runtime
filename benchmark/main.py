@@ -16,7 +16,7 @@ def perform_inference(input_metadata, submission_format):
         pred = random.choice([0, 1, 2, 3])
 
         # one-hot encode the prediction
-        submission_format.loc[filename, pred] = 1
+        submission_format.loc[filename, str(pred)] = 1
 
     # save as "submission.csv" in the root folder, where it is expected
     submission_format.to_csv("submission.csv")
