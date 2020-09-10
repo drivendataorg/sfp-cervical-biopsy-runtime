@@ -19,6 +19,11 @@ LOCAL_TAG = ${CPU_OR_GPU}-local
 IMAGE = ${REPO}:${TAG}
 LOCAL_IMAGE = ${REPO}:${LOCAL_TAG}
 
+# if not TTY (for example GithubActions CI) no interactive tty commands for docker
+ifneq (, $(shell tty))
+TTY_ARGS = -it
+endif
+
 # To run a submission, wse local version if that exists; otherwise, use official version
 # setting SUBMISSION_IMAGE as an environment variable will override the image
 SUBMISSION_IMAGE ?= $(shell docker images -q ${LOCAL_IMAGE})
@@ -41,7 +46,7 @@ build:
 ## Ensures that your locally built container can import all the Python packages successfully when it runs
 test-container: build _submission_write_perms
 	docker run \
-		-it \
+		${TTY_ARGS} \
 		${GPU_ARGS} \
 		--mount type=bind,source=$(shell pwd)/runtime/run-tests.sh,target=/run-tests.sh,readonly \
 		--mount type=bind,source=$(shell pwd)/runtime/tests,target=/tests,readonly \
@@ -100,7 +105,7 @@ ifeq (${SUBMISSION_IMAGE},)
 endif
 
 	docker run \
-		-it \
+		${TTY_ARGS} \
 		${GPU_ARGS} \
 		--network none \
 		--mount type=bind,source=$(shell pwd)/inference-data,target=/inference/data,readonly \
