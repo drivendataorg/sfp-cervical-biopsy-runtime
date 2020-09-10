@@ -41,6 +41,7 @@ build:
 ## Ensures that your locally built container can import all the Python packages successfully when it runs
 test-container: build _submission_write_perms
 	docker run \
+		-it \
 		${GPU_ARGS} \
 		--mount type=bind,source=$(shell pwd)/runtime/run-tests.sh,target=/run-tests.sh,readonly \
 		--mount type=bind,source=$(shell pwd)/runtime/tests,target=/tests,readonly \
@@ -99,6 +100,7 @@ ifeq (${SUBMISSION_IMAGE},)
 endif
 
 	docker run \
+		-it \
 		${GPU_ARGS} \
 		--network none \
 		--mount type=bind,source=$(shell pwd)/inference-data,target=/inference/data,readonly \
