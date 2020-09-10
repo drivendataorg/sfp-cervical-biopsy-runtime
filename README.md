@@ -6,7 +6,7 @@ This repository has two primary uses for competitors:
 
  - **Testing your code submission**: It lets you test your `submission.zip` file with a locally running version of the container so you don't have to wait for it to process on the competition site to find programming errors.
  - **Requesting new packages in the official runtime**: It lets you test adding additional Python packages to the official runtime environment. You can then submit a PR to request those packages be included in the container image.
- 
+
  ----
 
 ### [Getting started](#0-getting-started)
@@ -39,7 +39,7 @@ Make sure you have the prerequisites installed.
 
 Additional requirements to run with GPU:
  - [NVIDIA drivers](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#package-manager-installation) (we check whether you have `nvidia-smi` installed and enabled to automatically determine whether to build the cpu or gpu image)
- - [NVIDIA Docker container runtime](https://nvidia.github.io/nvidia-container-runtime/) 
+ - [NVIDIA Docker container runtime](https://nvidia.github.io/nvidia-container-runtime/)
 
 ### Quickstart
 
@@ -89,7 +89,7 @@ build               Builds the container locally, tagging it with cpu-local or g
 debug-container     Start your locally built container and open a bash shell within the running container; same as submission setup except has network access
 pack-benchmark      Creates a submission/submission.zip file from whatever is in the "benchmark" folder
 pull                Pulls the official container tagged cpu-latest or gpu-latest from Docker hub
-sample-images       Download the 3 sample images from infeerence-data/test_metadata.csv (300 MB)
+sample-images       Download the 3 sample images from inference-data/test_metadata.csv (300 MB)
 test-container      Ensures that your locally built container can import all the Python packages successfully when it runs
 test-submission     Runs container with submission/submission.zip as your submission and inference-data as the data to work with
 ```

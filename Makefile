@@ -73,7 +73,7 @@ debug-container: build _submission_write_perms
 pull:
 	docker pull ${IMAGE}
 
-## Download the 3 sample images from infeerence-data/test_metadata.csv (300 MB)
+## Download the 3 sample images from inference-data/test_metadata.csv (300 MB)
 sample-images:
 	# since this is the train metadata, we actually have URLs for downloading in this file
 	tail -n 3 inference-data/test_metadata.csv | awk -F , '{print $$7}' | xargs -I '{}' \
