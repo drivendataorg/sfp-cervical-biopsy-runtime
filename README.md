@@ -114,7 +114,9 @@ The script to execute the submission will unzip the contents of `/inference/subm
 
 We will then run a Python process in `/inference` to execute the `main.py` extracted from `submission.zip`. This `main.py` should read the `submission_format.csv` and `test_metadata.csv` files from `/inference/data`. On the DrivenData platform, `/inference/data` will have the actual test images, and the matching `submission_format.csv` and `test_metadata.csv`. In this repo, the `make sample-images` command will download 3 images from the training set that match the metadata and submission_format provided in this repo. You can use these 3 images to ensure your submission runs, but the metadata, submission format, and images on the DrivenData platform will be the actual test set. (You could use whatever images you want from the training set for local testing as long as they are in the `inference-data` folder and the corresponding entries for those files are in `inference-data/test_metadata.csv` and `inference-data/submission_format.csv`.
 
-Running this command will download three images (~300 MB) to `infernce-data` which match the metadata provided in this repo and can be used for testing:
+There is an example [`test_metadata.csv`](inference-data/test_metadata.csv) in this repo that is actually just three rows from the `train_metadata.csv`, which is available on the competition [Data Download](https://www.drivendata.org/competitions/67/competition-cervical-biopsy/data/) page. You should note that the actual `test_metadata.csv` in the production container does not have all of the same columns available. The details of what columns are available in the can be found on the [Problem Description](https://www.drivendata.org/competitions/67/competition-cervical-biopsy/page/255/#test_set) page. 
+
+Running this command will download three images (~300 MB) to `infernce-data`. You can see which images will be downloaded by looking at [`test_metadata.csv`](inference-data/test_metadata.csv). You can run a submission against these images for testing, after you download them by running:
 
 ```bash
 make sample-images
