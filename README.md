@@ -1,11 +1,13 @@
 # TissueNet: Detect Lesions in Cervical Biopsies
 
+![Python 3.8](https://img.shields.io/badge/Python-3.8-blue) [![GPU Docker Image](https://img.shields.io/badge/Docker%20image-gpu--latest-green)](https://hub.docker.com/r/drivendata/sfp-competition/tags?page=1&name=gpu-latest) [![CPU Docker Image](https://img.shields.io/badge/Docker%20image-cpu--latest-lightgrey)](https://hub.docker.com/r/drivendata/sfp-competition/tags?page=1&name=cpu-latest) 
+
 Welcome to the runtime repository for the [SFP Cervical Biopsy challenge](https://www.drivendata.org/competitions/67/competition-cervical-biopsy/). This repo contains the definition of the environment where your code submissions will run. It specifies both the operating system and the Python packages that will be available to your solution.
 
 This repository has two primary uses for competitors:
 
  - **Testing your code submission**: It lets you test your `submission.zip` file with a locally running version of the container so you don't have to wait for it to process on the competition site to find programming errors.
- - **Requesting new packages in the official runtime**: It lets you test adding additional Python packages to the official runtime environment. You can then submit a PR to request those packages be included in the container image.
+ - **Requesting new packages in the official runtime**: It lets you test adding additional packages to the [official runtime environment](runtime/py-gpu.yml). The official runtime uses **Python 3.8**. You can then submit a PR to request compatible packages be included in the official container image.
 
  ----
 
