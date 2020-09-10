@@ -18,6 +18,7 @@ jobs:
       CONTAINER: drivendata/sfp-competition
       SHA_TAG: ${{ matrix.proc }}-${{ github.sha }}
       LATEST_TAG: ${{ matrix.proc }}-latest
+      GITHUB_ACTIONS_NO_TTY: true
 
     steps:
       - uses: actions/checkout@v2

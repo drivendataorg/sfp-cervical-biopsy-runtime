@@ -20,7 +20,7 @@ IMAGE = ${REPO}:${TAG}
 LOCAL_IMAGE = ${REPO}:${LOCAL_TAG}
 
 # if not TTY (for example GithubActions CI) no interactive tty commands for docker
-ifneq (, $(shell tty))
+ifneq (true, ${GITHUB_ACTIONS_NO_TTY})
 TTY_ARGS = -it
 endif
 
