@@ -26,4 +26,5 @@ dependencies:
   - xgboost=1.2.0=py38h950e882_0
   - pip:
     - pyvips==2.1.12
+    - openslide-python==1.1.2
 prefix: /opt/conda/envs/py-gpu
