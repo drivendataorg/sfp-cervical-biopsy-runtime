@@ -24,12 +24,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Login to DockerHub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
       - name: Build ${{ matrix.proc }} Conatiner
         run: |
           docker build runtime --build-arg CPU_GPU=${{ matrix.proc }} --tag $CONTAINER:$SHA_TAG
@@ -41,6 +35,13 @@ jobs:
             --mount type=bind,source=$(pwd)/runtime/tests,target=/tests,readonly \
             $CONTAINER:$SHA_TAG \
             /bin/bash -c "bash /run-tests.sh ${{ matrix.proc }}"
+
+      - name: Login to DockerHub
+        if: github.ref == 'refs/heads/master'
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Publish container if master branch
         if: github.ref == 'refs/heads/master'
