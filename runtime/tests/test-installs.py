@@ -24,6 +24,7 @@ packages = [
     "xgboost",
     # ADD ADDITIONAL REQUIREMENTS BELOW HERE #
     "openslide"
+    "imagecodecs"
     ##########################################
 ]
 
