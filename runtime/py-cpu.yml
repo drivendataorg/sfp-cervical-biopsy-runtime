@@ -21,6 +21,7 @@ dependencies:
   - scikit-image=0.17.2=py38hcb8c335_1
   - scikit-learn=0.23.2=py38hee58b96_0
   - scipy=1.5.2=py38h8c5af15_0
+  - shapely=1.7.1=py38h98ec03d_0
   - tensorflow=2.2.0=mkl_py38h6d3daf0_0
   - torchvision=0.7.0=py38_cu102
   - xgboost=1.2.0=py38h950e882_0
