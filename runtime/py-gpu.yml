@@ -27,4 +27,5 @@ dependencies:
   - pip:
     - pyvips==2.1.12
     - openslide-python==1.1.2
+    - imagecodecs==2020.5.30
 prefix: /opt/conda/envs/py-gpu
