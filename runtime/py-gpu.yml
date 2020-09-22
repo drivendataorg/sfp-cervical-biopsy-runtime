@@ -5,7 +5,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - fastai=2.0.0=pyh39e3cac_0
+  - fastai=2.0.13=py_0
   - lightgbm=2.3.1=py38he1b5a44_0
   - mahotas=1.4.11=py38hc5bc63f_0
   - opencv=4.4.0=py38_2
