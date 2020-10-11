@@ -26,7 +26,8 @@ dependencies:
   - torchvision=0.7.0=py38_cu102
   - xgboost=1.2.0=py38h950e882_0
   - pip:
-    - pyvips==2.1.12
-    - openslide-python==1.1.2
-    - imagecodecs==2020.5.30
+      - pyvips==2.1.12
+      - openslide-python==1.1.2
+      - imagecodecs==2020.5.30
+      - imagehash==4.1.0
 prefix: /opt/conda/envs/py-cpu

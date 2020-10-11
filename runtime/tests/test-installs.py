@@ -26,6 +26,7 @@ packages = [
     "imagecodecs",
     "openslide",
     "shapely",
+    "imagehash"
     ##########################################
 ]
 
