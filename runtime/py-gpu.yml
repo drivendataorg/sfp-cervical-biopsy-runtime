@@ -25,6 +25,7 @@ dependencies:
   - tensorflow-gpu=2.2.0=h0d30ee6_0
   - torchvision=0.7.0=py38_cu101
   - xgboost=1.2.0=py38h950e882_0
+  - pytorch-lightning=0.9.0=py_0
   - pip:
       - pyvips==2.1.12
       - openslide-python==1.1.2
