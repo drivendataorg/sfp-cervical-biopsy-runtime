@@ -26,7 +26,8 @@ packages = [
     "imagecodecs",
     "openslide",
     "shapely",
-    "imagehash"
+    "imagehash",
+    "pytorch_lightning"
     ##########################################
 ]
 
