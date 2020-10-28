@@ -27,7 +27,9 @@ packages = [
     "openslide",
     "shapely",
     "imagehash",
-    "pytorch_lightning"
+    "pytorch_lightning",
+    "spams",
+    "staintools"
     ##########################################
 ]
 

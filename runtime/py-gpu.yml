@@ -31,4 +31,6 @@ dependencies:
       - openslide-python==1.1.2
       - imagecodecs==2020.5.30
       - imagehash==4.1.0
+      - staintools==2.1.2
+      - spams==2.6.2.5
 prefix: /opt/conda/envs/py-gpu
